@@ -1,0 +1,46 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\tatendaZw\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add express cors socket.io bcrypt.js consola jsonwebtoken
+
+PATH: 
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\ProgramData\Anaconda3;C:\ProgramData\Anaconda3\Library\mingw-w64\bin;C:\ProgramData\Anaconda3\Library\usr\bin;C:\ProgramData\Anaconda3\Library\bin;C:\ProgramData\Anaconda3\Scripts;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files\PostgreSQL\13\bin;C:\Users\tatendaZw\anaconda3;C:\Users\tatendaZw\AppData\Local\Programs\Python\Python36;C:\Program Files\Java\jdk-14.0.2\bin;C:\Program Files\Android\Android Studio\bin\platform-tools;C:\Program Files\apache-ant-1.10.10\bin;C:\Users\tatendaZw\Documents\software\platform-tools;C:\Program Files\Git\cmd;C:\Users\tatendaZw\AppData\Local\Microsoft\WindowsApps;C:\Users\tatendaZw\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\tatendaZw\AppData\Roaming\npm;C:\Program Files\heroku\bin;C:\Users\tatendaZw\Documents\software\platform-tools;
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  14.15.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/bcrypt.js: Not found
+      at Request.params.callback [as _callback] (C:\Users\tatendaZw\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66988:18)
+      at Request.self.callback (C:\Users\tatendaZw\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140662:22)
+      at Request.emit (events.js:315:20)
+      at Request.<anonymous> (C:\Users\tatendaZw\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141634:10)
+      at Request.emit (events.js:315:20)
+      at IncomingMessage.<anonymous> (C:\Users\tatendaZw\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141556:12)
+      at Object.onceWrapper (events.js:421:28)
+      at IncomingMessage.emit (events.js:327:22)
+      at endReadableNT (_stream_readable.js:1327:12)
+      at processTicksAndRejections (internal/process/task_queues.js:80:21)
+
+npm manifest: 
+  {
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "backend for meetA social media app",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Tatenda Bako",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
