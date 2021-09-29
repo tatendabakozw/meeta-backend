@@ -1,3 +1,4 @@
+const Comment = require("../models/Comment")
 const Posts = require("../models/Posts")
 const User = require("../models/User")
 
@@ -8,10 +9,33 @@ exports.getSinglePost = async (req, res, next) => {
     const { id } = req.params
     const _user = req.user
     try {
-        Posts.findOne({ _id: id }).then(post => {
+        Posts.findOne({ _id: id }).then(async post => {
+            const comments_array = post.comments
+
+            const comments = await Comment.find().where('_id').in(comments_array).exec();
+            let all_comments = []
+            for (let i = 0; i < comments.length; i++) {
+                User.findOne({ _id: comments[i].user_id }).then(res => {
+                    all_comments.push({
+                        comment_body: comments[i].body,
+                        comments_id: comments[i]._id,
+                        comment_likes: comments[i].likes,
+                        comment_picture: comments[i].pictureUrl,
+                        comment_comments: comments[i].comments,
+                        comment_post: comments[i].post_id,
+                        comment_owner: res._id,
+                        comment_owner_picture: res.photoURL,
+                        comment_owner_name: res.displayName,
+                        comment_owner_verified: res.verified
+                    })
+                })
+            }
+
             User.findOne({ _id: post.owner }).then(post_owner => {
                 return res.status(200).json({
-                    post, post_owner: {
+                    post,
+                    comments: all_comments,
+                    post_owner: {
                         displayName: post_owner.displayName,
                         photoURL: post_owner.photoURL,
                         _id: post_owner._id,

@@ -56,7 +56,7 @@ const UserSchema = new mongoose.Schema({
     },
     posts: Array,
     followers: Array,
-    chats: Array,
+    chatrooms: Array,
     following: Array,
     requests: Array,
     liked_posts: Array,
