@@ -1,13 +1,47 @@
-const consola = require('consola')
 const express = require('express')
 const { requireSignIn } = require('../middleware')
 const Posts = require('../models/Posts')
 const User = require('../models/User')
 const router = express.Router()
 
+//get all posts
+router.get('/all', requireSignIn, async (req, res, next) => {
+    const _user = req.user
+    try {
+        const posts = await Posts.find({}) // all posts
+        const all_posts = []
+
+        // getiing the use for each post
+        for (let i = 0; i < posts.length; i++) {
+            const post_user = await User.findOne({ _id: posts[i].owner })
+            const new_post = ({
+                post_owner_pic: post_user.photoURL,
+                post_owner_username: post_user.displayName,
+                post_owner_id: post_user._id,
+                post_owner_verified: post_user.verified,
+                pictureUrl: posts[i].pictureUrl,
+                post_comments_length: posts[i].comments.length,
+                post_liked_length: posts[i].likes.length,
+                createdAt: posts[i].createdAt,
+                post_body: posts[i].body,
+                liked_post: posts[i].likes.find(element => element === _user._id) ? true : false,
+                _id: posts[i]._id,
+                post_owner: post_user._id
+            })
+            all_posts.push(new_post)
+        }
+
+        return res.status(200).json(all_posts)
+
+    } catch (error) {
+        next(error)
+    }
+})
+
 //get single post
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', requireSignIn, async (req, res, next) => {
     const { id } = req.params
+    const _user = req.user
     try {
         Posts.findOne({ _id: id }).then(post => {
             User.findOne({ _id: post.owner }).then(post_owner => {
@@ -16,14 +50,15 @@ router.get('/:id', async (req, res, next) => {
                         displayName: post_owner.displayName,
                         photoURL: post_owner.photoURL,
                         _id: post_owner._id,
-                        verified: post_owner.verified
+                        verified: post_owner.verified,
+                        liked_post: post.likes.find(element => element === _user._id) ? true : false
                     }
                 })
             }).catch(err => {
-                return res.status(200).json({ error: err })
+                return res.status(500).json({ error: err.message })
             })
         }).catch(error => {
-            return res.status(200).json({ error: error })
+            return res.status(500).json({ error: error.message })
         })
 
     } catch (error) {

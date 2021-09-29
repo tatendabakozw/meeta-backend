@@ -4,13 +4,24 @@ const User = require("../models/User")
 //get request
 // /api/v1/:id
 exports.get_single_user = async (req, res, next) => {
-    const { id } = req.params
-    const logged_in_user = req.user
+    const { id } = req.params // user to get
+    const logged_in_user = req.user // current logged in user
     try {
         const _user = await User.findOne({ _id: id })
+        const logged_in_user_doc = await User.findOne({ _id: logged_in_user._id })
+        let iam_following_user = []
+        let user_follows_me = []
         if (_user) {
-            const user_is_a_follower = await User.find({ followers: logged_in_user._id })
-            const user_is_following = await User.find({ following: logged_in_user._id })
+
+            //checking if current loggedd in user is following the other user
+            logged_in_user_doc.following.filter(value => {
+                iam_following_user = value === logged_in_user._id
+            })
+            //checking if the other user is following the current logged in user
+            _user.following.filter(value => {
+                user_follows_me = value === id
+            })
+
             return res.status(200).json({
                 user: {
                     address: _user.address,
@@ -26,12 +37,13 @@ exports.get_single_user = async (req, res, next) => {
                     photoURL: _user.photoURL,
                     followers: _user.followers,
                     following: _user.following,
-                    user_is_following: user_is_following.length < 1 ? false : true ,
-                    user_is_a_follower: user_is_a_follower.length < 1 ? false : true,
+                    iam_following_user: iam_following_user.length < 1 ? false : true,
+                    user_follows_me: user_follows_me.length < 1 ? false : true,
                     bio: _user.bio,
                     _id: _user._id
                 }
             })
+
         } else {
             return res.status(404).json({ error: "User not found" })
         }
@@ -83,8 +95,8 @@ exports.toggle_follow = async (req, res, next) => {
             if (id === _user._id) {
                 return res.status(402).json({ error: "You cannot follow youself" })
             } else {
-                User.findByIdAndUpdate({ _id: _user._id }, { $push: { following: _user._id } }).then(() => {
-                    User.findByIdAndUpdate({ _id: id }, { $push: { followers: id } }).then(() => {
+                User.findByIdAndUpdate({ _id: _user._id }, { $push: { following: id } }).then(() => {
+                    User.findByIdAndUpdate({ _id: id }, { $push: { followers: _user._id } }).then(() => {
                         return res.status(200).json({ message: 'Followed' })
                     }).catch(error => {
                         return res.status(500).json({ error: "Failed to follow", err: error })
@@ -99,8 +111,8 @@ exports.toggle_follow = async (req, res, next) => {
             if (id === _user._id) {
                 return res.status(402).json({ error: "You cannot un-follow youself" })
             } else {
-                User.findByIdAndUpdate({ _id: _user._id }, { $pull: { following: _user._id } }).then(() => {
-                    User.findByIdAndUpdate({ _id: id }, { $pull: { followers: id } }).then(() => {
+                User.findByIdAndUpdate({ _id: _user._id }, { $pull: { following: id } }).then(() => {
+                    User.findByIdAndUpdate({ _id: id }, { $pull: { followers: _user._id } }).then(() => {
                         return res.status(200).json({ message: 'Un-Followed' })
                     }).catch(error => {
                         return res.status(500).json({ error: "Failed to un-follow", err: error })
