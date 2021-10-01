@@ -73,25 +73,26 @@ exports.login_user = async (req, res, next) => {
                         _id: _user._id
                     }, process.env.JWT_SECRET)
                     if (token) {
-                        global.io.sockets.emit('login-success', 'sucessfully logged in')
+                        const user = {
+                            displayName: _user.displayName,
+                            photoURL: _user.photoURL,
+                            email: _user.email,
+                            gender: _user.gender,
+                            bio: _user.bio,
+                            verified: _user.verified,
+                            posts: _user.post,
+                            address: _user.address,
+                            yearOfBirth: _user.yearOfBirth,
+                            friends: _user.friends,
+                            chats: _user.chats,
+                            posts: _user.posts,
+                            _id: _user._id
+                        }
+                        global.io.sockets.emit('login-success', user)
                         return res.status(200).json({
                             message: 'login successful',
                             token: token,
-                            user: {
-                                displayName: _user.displayName,
-                                photoURL: _user.photoURL,
-                                email: _user.email,
-                                gender: _user.gender,
-                                bio: _user.bio,
-                                verified: _user.verified,
-                                posts: _user.post,
-                                address: _user.address,
-                                yearOfBirth: _user.yearOfBirth,
-                                friends: _user.friends,
-                                chats: _user.chats,
-                                posts: _user.posts,
-                                _id: _user._id
-                            }
+                            user: user
                         })
                     } else {
                         return res.status(422).json({ error: 'Failed to login, Wrong password!' })

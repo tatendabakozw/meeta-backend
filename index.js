@@ -54,13 +54,6 @@ app.use((error, req, res, next) => {
   })
 })
 
-// // connectiong socker
-// io.on('connection',(socket)=>{
-//   socket.on('message', (msg)=>{
-//     io.emit('message', msg)
-//   })
-// })
-
 //the listener
 server.listen(port, (err) => {
   if (err) {
