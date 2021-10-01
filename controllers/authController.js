@@ -107,6 +107,8 @@ exports.login_user = async (req, res, next) => {
 }
 
 //logout user
+//post request 
+// /api/v1/auth/logout
 exports.logout_user = async (req, res, next) => {
     try {
         global.io.sockets.emit('logout-success', 'sucessfully logged out')
