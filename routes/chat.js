@@ -14,11 +14,14 @@ const generateChannelID = (otherID, myid) => {
 }
 
 //send a message route
-router.post('/send_message/:id', requireSignIn, async (req, res, next) => {
+router.post('/send_message', async (req, res, next) => {
     const { body, pictureUrl } = req.body
     const _user = req.user // the user sennding the message
     const { id } = req.params //the user receiveing the message
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+    global.io.sockets.emit('message', 'blah blah blah')
+    
     try {
         const newMessage = new Message({
             body: body,
@@ -36,6 +39,7 @@ router.post('/send_message/:id', requireSignIn, async (req, res, next) => {
                     User.findOneAndUpdate({ _id: _user._id }, { $push: { chatrooms: generateChannelID(id, _user._id) } }, options).then(() => {
                         User.findByIdAndUpdate({ _id: id }, { $push: { chatrooms: generateChannelID(id, _user._id) } }, options).then(async () => {
                             const message = await newMessage.save()
+                            global.io.sockets.emit('message', message)
                             return res.status(200).json({ message: "Message send", message: message })
                         }).catch(error => {
                             return res.status(500).json({ error })

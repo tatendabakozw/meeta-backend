@@ -1,72 +1,71 @@
 const express = require('express')
+const helmet = require('helmet')
+const consola = require('consola')
 const morgan = require('morgan')
 const app = express()
-const server = require("http").createServer(app);
-const consola = require('consola')
 const cors = require('cors')
-const connectDB = require('./utils/database')
 require('dotenv').config()
-const helmet = require('helmet')
-app.use(helmet())
+var server = require('http').createServer(app);
+const socketio = require("socket.io")
+const WebSockets = require('./utils/WebSockets')
+global.io = socketio(server);
+global.io.on('connection', WebSockets.connection)
 
 const port = process.env.PORT || 5500
 
-// connect socket io for real time listening
-const io = require("socket.io")(server);
-
-io.on("connection", socket => {
-    console.log("a user connected :D", socket.id);
-    // socket.on("chat message", msg => {
-    //   console.log(msg);
-    //   io.emit("chat message", msg);
-    // });
-});
-
-//app level middleware
+//applevel middleware
+app.use(helmet())
+app.use(morgan('common'))
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(helmet())
-app.use(morgan('common'))
+//setting socket to use in other routes
 
 //connecting database
+const connectDB = require('./utils/database')
 connectDB()
 
-//user defined routes
+//user defined roures
 app.use('/api/v1/auth', require('./routes/authRoute'))
-app.use('/api/v1/user', require('./routes/userRoute'))
 app.use('/api/v1/posts', require('./routes/postsRoutes'))
-app.use('/api/v1/comment', require('./routes/commentsRoute'))
+app.use('/api/v1/user', require('./routes/userRoute'))
 app.use('/api/v1/chat', require('./routes/chat'))
 
 //basic get route
 app.get('/', (req, res) => {
-    res.json({ message: 'meetA API by Tatenda Bako' })
+  res.json({ message: 'daypitch API by Tatenda Bako' })
 })
 
 //not found handler
 app.use((req, res, next) => {
-    const error = new Error(`Not found - ${req.originalUrl}`)
-    res.status(404)
-    next(error)
+  const error = new Error(`Not found - ${req.originalUrl}`)
+  res.status(404)
+  next(error)
 })
 
 //error hanling middleware
 app.use((error, req, res, next) => {
-    const statusCode = res.statusCode === 200 ? 500 : res.statusCode
-    res.status(statusCode);
-    console.log(error)
-    res.json({
-        message: error.message,
-        stack: process.env.NODE_ENV === 'production' ? "you are in production" : error.stack
-    })
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode
+  res.status(statusCode);
+  consola.error(error)
+  res.json({
+    message: error.message,
+    stack: process.env.NODE_ENV === 'production' ? "you are in production" : error.stack
+  })
 })
 
-//listener
+// // connectiong socker
+// io.on('connection',(socket)=>{
+//   socket.on('message', (msg)=>{
+//     io.emit('message', msg)
+//   })
+// })
+
+//the listener
 server.listen(port, (err) => {
-    if (err) {
-        consola.error(err)
-    } else {
-        consola.success(`server up on port ${port}`)
-    }
+  if (err) {
+    consola.error(err)
+  } else {
+    consola.success(`server up on port ${port}`)
+  }
 })

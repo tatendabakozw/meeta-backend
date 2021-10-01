@@ -16,7 +16,7 @@ exports.register_user = async (req, res, next) => {
         if (password.length < 6) {
             return res.status(400).json({ error: "Password too short" })
         } else {
-            
+
             const hash = await bcrypt.hash(password, 10)
             if (hash) {
                 const user = new User({
@@ -24,10 +24,15 @@ exports.register_user = async (req, res, next) => {
                     email,
                     password: hash,
                 })
-                const saveduser = await user.save()
-                return res.status(200).json({ message: "Account Created!", user: saveduser })
-            } 
-            
+                user.save().then(res => {
+                    global.io.sockets.emit('register-success', 'sucessfully registered')
+                    return res.status(200).json({ message: "Account Created!", user: res })
+                }).catch(err => {
+                    console.log(err)
+                })
+
+            }
+
             else {
                 return res.status(500).json({ error: "Password Not Hashed" })
             }
@@ -68,6 +73,7 @@ exports.login_user = async (req, res, next) => {
                         _id: _user._id
                     }, process.env.JWT_SECRET)
                     if (token) {
+                        global.io.sockets.emit('login-success', 'sucessfully logged in')
                         return res.status(200).json({
                             message: 'login successful',
                             token: token,
@@ -95,6 +101,16 @@ exports.login_user = async (req, res, next) => {
                 }
             }
         }
+    } catch (error) {
+        next(error)
+    }
+}
+
+//logout user
+exports.logout_user = async (req, res, next) => {
+    try {
+        global.io.sockets.emit('logout-success', 'sucessfully logged out')
+        return res.status(200).json({ user: null, token: null })
     } catch (error) {
         next(error)
     }

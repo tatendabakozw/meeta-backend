@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { register_user, login_user } = require('../controllers/authController')
+const { register_user, login_user, logout_user } = require('../controllers/authController')
 const { requireSignIn } = require('../middleware')
 
 //default route
@@ -18,5 +18,11 @@ router.post('/register', register_user)
 //post request
 // /api/v1/auth/login
 router.post('/login', login_user)
+
+
+//logout user
+//post request
+// /api/v1/logout
+router.post('/logout', logout_user)
 
 module.exports = router
