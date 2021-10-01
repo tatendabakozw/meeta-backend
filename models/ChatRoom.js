@@ -10,6 +10,9 @@ const ChatroomSchema = new mongoose.Schema({
     },
     last_sent_by:{
         type: String
+    },
+    last_sent_to:{
+        type: String
     }
 },{
     timestamps: true

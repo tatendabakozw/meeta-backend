@@ -24,9 +24,9 @@ exports.register_user = async (req, res, next) => {
                     email,
                     password: hash,
                 })
-                user.save().then(res => {
+                user.save().then(response => {
                     global.io.sockets.emit('register-success', 'sucessfully registered')
-                    return res.status(200).json({ message: "Account Created!", user: res })
+                    return res.status(200).json({ message: "Account Created!", user: response })
                 }).catch(err => {
                     console.log(err)
                 })

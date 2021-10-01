@@ -30,6 +30,7 @@ app.use('/api/v1/auth', require('./routes/authRoute'))
 app.use('/api/v1/posts', require('./routes/postsRoutes'))
 app.use('/api/v1/user', require('./routes/userRoute'))
 app.use('/api/v1/chat', require('./routes/chat'))
+app.use('/api/v1/comment', require('./routes/commentsRoute'))
 
 //basic get route
 app.get('/', (req, res) => {
