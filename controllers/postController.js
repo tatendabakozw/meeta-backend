@@ -143,11 +143,18 @@ exports.likeA_Post = async (req, res, next) => {
     try {
 
         // fond if user has already liked the post
-        const _liked = await User.find({ liked_posts: id })
+        const user_doc = await User.findOne({ _id: _user._id })
+        let _liked = user_doc.liked_posts.find(element => element === id);
+        console.log(_liked)
 
-        if (_liked.length < 1) {
-            Posts.updateOne({ _id: id }, { $push: { likes: _user._id } }).then(response => {
-                User.updateOne({ _id: _user._id }, { $push: { liked_posts: id } }).then(() => {
+        if (!_liked) {
+            Posts.findOneAndUpdate({ _id: id }, { $push: { likes: _user._id } }).then(response => {
+                User.findOneAndUpdate({ _id: _user._id }, { $push: { liked_posts: id } }).then((ssd) => {
+                    Posts.findOne({ _id: id }).then(respo => {
+                        global.io.sockets.emit('like-done', {likes: respo.likes.length, user_liked: true} )
+                    }).catch(error => {
+                        next(error)
+                    })
                     return res.status(200).json({ message: 'Liked' })
                 }).catch(err => {
                     return res.status(200).json({ error: err })
@@ -156,8 +163,13 @@ exports.likeA_Post = async (req, res, next) => {
                 return res.status(200).json({ error: err })
             })
         } else {
-            Posts.updateOne({ _id: id }, { $pull: { likes: _user._id } }).then(response => {
-                User.updateOne({ _id: _user._id }, { $pull: { liked_posts: id } }).then(() => {
+            Posts.findOneAndUpdate({ _id: id }, { $pull: { likes: _user._id } }).then(response => {
+                User.findOneAndUpdate({ _id: _user._id }, { $pull: { liked_posts: id } }).then(() => {
+                    Posts.findOne({ _id: id }).then(respo => {
+                        global.io.sockets.emit('like-done', {likes: respo.likes.length, user_liked: false })
+                    }).catch(error => {
+                        next(error)
+                    })
                     return res.status(200).json({ message: 'Un-Liked' })
                 }).catch(err => {
                     return res.status(200).json({ error: err })
