@@ -95,7 +95,7 @@ exports.getAllPosts = async (req, res, next) => {
 //post request
 // api/v1/create
 exports.createA_Post = async (req, res, next) => {
-    const _user = req.user
+    const _user = req.user // user creating the post
     const { body, title, pictureUrl, location } = req.body
     try {
         const newPost = new Posts({

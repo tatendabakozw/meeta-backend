@@ -54,6 +54,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    stories: Array,
     posts: Array,
     followers: Array,
     chatrooms: Array,

@@ -1,10 +1,8 @@
 const consola = require('consola')
 const mongoose = require('mongoose')
 
-const LOCAL_DB = `mongodb://localhost:27017/meetA_DB`
-
 const connectDB = () => {
-    mongoose.connect(LOCAL_DB, {})
+    mongoose.connect(process.env.PROD_DB, {})
     // mongoose.connection.on('connected', (err) => {
     //     if (err) {
     //         consola.error(err)
